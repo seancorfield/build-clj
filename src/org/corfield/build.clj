@@ -18,7 +18,7 @@
   deploy    -- req :lib, :version
                opt :target, :class-dir, :jar-file
   jar       -- req :lib, :version
-               opt :target, :class-dir, :basis, :src-dirs, :tag, :jar-file,
+               opt :target, :class-dir, :basis, :src-dirs, :tag, :jar-file, :scm-url
   run-task  -- [opts aliases]
                opt :java-opts -- defaults to :jvm-opts from aliases
                    :jvm-opts  -- added to :java-opts
@@ -51,7 +51,7 @@
   "Build the library JAR file.
 
   Requires: lib, version"
-  [{:keys [target class-dir lib version basis src-dirs tag jar-file] :as opts}]
+  [{:keys [target class-dir lib version basis src-dirs tag jar-file scm-url] :as opts}]
   (assert (and lib version) "lib and version are required for jar")
   (let [target    (or target default-target)
         class-dir (or class-dir (default-class-dir target))
@@ -63,7 +63,8 @@
     (b/write-pom {:class-dir class-dir
                   :lib       lib
                   :version   version
-                  :scm {:tag tag}
+                  :scm       (cond-> {:tag tag}
+                               scm-url (assoc :url scm-url))
                   :basis     basis
                   :src-dirs  src-dirs})
     (println "Copying src...")
