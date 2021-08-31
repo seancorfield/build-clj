@@ -1,5 +1,8 @@
 # Change Log
 
+* v0.1.2 -- 2021-08-31
+  * Update `tools.build` to v0.2.0 7cbb94b.
+
 * v0.1.1 d096192 -- 2021-08-30
   * Address #1 by adding `:scm` option; `:tag` will still override `:scm {:tag ...}`.
 
