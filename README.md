@@ -122,7 +122,7 @@ the defaults as follows:
   * `:target`, `:class-dir`, `:jar-file`,
 * `jar`
   * Requires: `:lib` and `:version`,
-  * `:target`, `:class-dir`, `:basis`, `:src-dirs`, `:tag` (defaults to `(str "v" version)`), `:jar-file`,
+  * `:target`, `:class-dir`, `:basis`, `:scm`, `:src-dirs`, `:tag` (defaults to `(str "v" version)`), `:jar-file`,
 * `run-tests`
   * `:aliases` -- for any additional aliases beyond `:test` which is always added,
   * Also accepts any options that `run-task` accepts.
