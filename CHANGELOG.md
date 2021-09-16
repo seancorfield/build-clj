@@ -1,6 +1,6 @@
 # Change Log
 
-* v0.3.0 -- 2021-09-16
+* v0.3.0 fb11811 -- 2021-09-16
   * `:lib` is now optional for `uber` if you pass in `:uber-file`.
   * Update `tools.build` to v0.5.0 7d77952 (default basis is now "repro" without user `deps.edn`).
 
