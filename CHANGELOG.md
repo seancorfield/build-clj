@@ -1,5 +1,8 @@
 # Change Log
 
+* v0.2.1 -- 2021-09-15
+  * Remove spurious `println` from `uber` task.
+
 * v0.2.0 e9f027d -- 2021-09-15
   * Address #3 by adding an `uber` task which includes the log4j2 plugins cache conflict handler.
   * Added support for many more options that `tools.build` tasks accept.

@@ -173,7 +173,6 @@
   (let [{:keys [class-dir ns-compile sort src-dirs src+dirs uber-file version]
          :as   opts}
         (jar-opts opts)]
-    (println (assoc opts :basis "{...}"))
     (if version
       (do
         (println "\nWriting pom.xml...")
