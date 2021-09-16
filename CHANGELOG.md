@@ -1,6 +1,6 @@
 # Change Log
 
-* v0.2.1 -- 2021-09-15
+* v0.2.1 6ccae5b -- 2021-09-15
   * Remove spurious `println` from `uber` task.
 
 * v0.2.0 e9f027d -- 2021-09-15
