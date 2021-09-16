@@ -184,7 +184,7 @@
                  :target-dir class-dir})
     (if (or ns-compile sort)
       (do
-        (println "Compiling" (str (str/join ", " src-dirs) "..."))
+        (println "Compiling" (str (str/join ", " (or ns-compile src-dirs)) "..."))
         (b/compile-clj opts))
       (println "Skipping compilation because :main, :ns-compile, and :sort were omitted..."))
     (println "Building uberjar" (str uber-file "..."))
