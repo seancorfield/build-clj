@@ -12,7 +12,7 @@ your `:build` alias can just be:
 
 ```clojure
   :build {:deps {io.github.seancorfield/build-clj
-                 {:git/tag "v0.2.0" :git/sha "..."}}
+                 {:git/tag "v0.2.0" :git/sha "e9f027d"}}
           :ns-default build}
 ```
 
