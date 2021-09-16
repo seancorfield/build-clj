@@ -26,9 +26,9 @@
                opt :target, :class-dir, :basis, :scm, :src-dirs,
                    :resource-dirs, :tag, :jar-file
                (see docstring for additional options)
-  uber      -- req :lib
+  uber      -- req :lib or :uber-file
                opt :target, :class-dir, :basis, :scm, :src-dirs,
-                   :resource-dirs, :tag, :uber-file, :version
+                   :resource-dirs, :tag, :version
                (see docstring for additional options)
   run-task  -- [opts aliases]
                opt :java-opts -- defaults to :jvm-opts from aliases
@@ -74,7 +74,7 @@
 
 (defn- default-basis
   [basis]
-  (or basis (b/create-basis {:project "deps.edn"})))
+  (or basis (b/create-basis {})))
 
 (defn- default-class-dir
   [class-dir target]
@@ -82,7 +82,7 @@
 
 (defn- default-jar-file
   [target lib version]
-  (format "%s/%s-%s.jar" (default-target target) (name lib) version))
+  (format "%s/%s-%s.jar" (default-target target) (name (or lib 'application)) version))
 
 (defn clean
   "Remove the target folder."
@@ -149,15 +149,15 @@
 (defn uber
   "Build the application uber JAR file.
 
-  Requires: :lib
+  Requires: :lib or :uber-file
 
   Accepts any options that are accepted by:
   * `tools.build/write-pom`
   * `tools.build/compile-clj`
   * `tools.build/uber`
 
-  The uber JAR filename is derived from :lib,
-  and :version if provided.
+  The uber JAR filename is derived from :lib
+  and :version if provided, else from :uber-file.
 
   If :version is provided, writes pom.xml into
   META-INF in the :class-dir, then
@@ -165,20 +165,20 @@
   Compiles :src-dirs into :class-dir, then
   copies :src-dirs and :resource-dirs into :class-dir, then
   builds :uber-file into :target (directory)."
-  {:argslists '([{:keys [lib
+  {:argslists '([{:keys [lib uber-file
                          basis class-dir compile-opts filter-nses
                          ns-compile repos resource-dirs scm sort
-                         src-dirs src-pom tag target uber-file version]}])}
-  [{:keys [lib] :as opts}]
-  (assert lib ":lib is required for uber")
-  (let [{:keys [class-dir ns-compile sort src-dirs src+dirs uber-file version]
+                         src-dirs src-pom tag target version]}])}
+  [{:keys [lib uber-file] :as opts}]
+  (assert (or lib uber-file) ":lib or :uber-file is required for uber")
+  (let [{:keys [class-dir lib ns-compile sort src-dirs src+dirs uber-file version]
          :as   opts}
         (jar-opts opts)]
-    (if version
+    (if (and lib version)
       (do
         (println "\nWriting pom.xml...")
         (b/write-pom opts))
-      (println "\nSkipping pom.xml because :version was omitted..."))
+      (println "\nSkipping pom.xml because :lib and/or :version were omitted..."))
     (println "Copying" (str (str/join ", " src+dirs) "..."))
     (b/copy-dir {:src-dirs   src+dirs
                  :target-dir class-dir})

@@ -1,5 +1,9 @@
 # Change Log
 
+* v0.3.0 -- 2021-09-16
+  * `:lib` is now optional for `uber` if you pass in `:uber-file`.
+  * Update `tools.build` to v0.5.0 7d77952 (default basis is now "repro" without user `deps.edn`).
+
 * v0.2.2 5a12a1a -- 2021-09-15
   * Address #3 by adding an `uber` task which includes the log4j2 plugins cache conflict handler.
   * Added support for many more options that `tools.build` tasks accept.

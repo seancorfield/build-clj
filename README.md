@@ -12,7 +12,7 @@ your `:build` alias can just be:
 
 ```clojure
   :build {:deps {io.github.seancorfield/build-clj
-                 {:git/tag "v0.2.2" :git/sha "5a12a1a"}}
+                 {:git/tag "v0.3.0" :git/sha "..."}}
           :ns-default build}
 ```
 
@@ -40,7 +40,7 @@ _[Several functions in `clojure.tools.build.api` return `nil` instead]_
 * `run-tests` -- run the project's tests.
 
 For `deploy` and `jar`, you must provide at least `:lib` and `:version`.
-For `uber`, you must provide at least `:lib` for the name of the JAR file.
+For `uber`, you must provide at least `:lib` or `:uber-file` for the name of the JAR file.
 Everything else has "sane" defaults, but can be overridden.
 
 You might typically have the following tasks in your `build.clj`:
@@ -121,7 +121,7 @@ Or you could just make it part of your `ci` pipeline without adding that functio
 The following defaults are provided:
 
 * `:target`    -- `"target"`,
-* `:basis`     -- `(create-basis {:project "deps.edn"}`,
+* `:basis`     -- `(b/create-basis {})` -- this is a reproducible basis, i.e., it ignores the user `deps.edn` file -- if you want your user `deps.edn` included, you will need to explicitly pass `:basis (b/create-basis {:user :standard})` into tasks,
 * `:class-dir` -- `(str target "/classes")`,
 * `:jar-file`  -- `(format \"%s/%s-%s.jar\" target lib version)`,
 * `:uber-file` -- `(format \"%s/%s-%s.jar\" target lib version)` if `:version` is provided, else `(format \"%s/%s-standalone.jar\" target lib)`.
@@ -138,8 +138,8 @@ the high-level defaults as follows:
   * Requires: `:lib` and `:version`,
   * `:target`, `:class-dir`, `:basis`, `:resource-dirs`, `:scm`, `:src-dirs`, `:tag` (defaults to `(str "v" version)`), `:jar-file`,
 * `uber`
-  * Requires: `:lib`,
-  * `:target`, `:class-dir`, `:basis`, `:compile-opts`, `:main`, `:ns-compile`, `:resource-dirs`, `:scm`, `:src-dirs`, `:tag` (defaults to `(str "v" version)` if `:version` provided), `:uber-file`, `:version`
+  * Requires: `:lib` or `:uber-file`,
+  * `:target`, `:class-dir`, `:basis`, `:compile-opts`, `:main`, `:ns-compile`, `:resource-dirs`, `:scm`, `:src-dirs`, `:tag` (defaults to `(str "v" version)` if `:version` provided), `:version`
 * `run-tests`
   * `:aliases` -- for any additional aliases beyond `:test` which is always added,
   * Also accepts any options that `run-task` accepts.
