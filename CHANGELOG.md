@@ -1,6 +1,6 @@
 # Change Log
 
-* v0.2.2 -- 2021-09-15
+* v0.2.2 5a12a1a -- 2021-09-15
   * Address #3 by adding an `uber` task which includes the log4j2 plugins cache conflict handler.
   * Added support for many more options that `tools.build` tasks accept.
   * Overhaul/expansion of docstrings.
