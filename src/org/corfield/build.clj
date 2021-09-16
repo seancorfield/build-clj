@@ -102,6 +102,7 @@
     :as   opts}]
   (let [scm-default   (cond tag     {:tag tag}
                             version {:tag (str "v" version)})
+        src-default   (or src-dirs ["src"])
         version       (or version "standalone")
         xxx-file      (default-jar-file target lib version)]
     (assoc opts
@@ -113,8 +114,8 @@
            :ns-compile (or    ns-compile  (when (and main (not sort))
                                             [main]))
            :scm        (merge scm-default scm)
-           :src-dirs   (or    src-dirs    ["src"])
-           :src+dirs   (into  src-dirs    (or resource-dirs ["resources"]))
+           :src-dirs   src-default
+           :src+dirs   (into  src-default (or resource-dirs ["resources"]))
            :uber-file  (or    uber-file   xxx-file))))
 
 (defn jar

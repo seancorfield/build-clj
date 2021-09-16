@@ -1,6 +1,7 @@
 # Change Log
 
-* v0.2.1 6ccae5b -- 2021-09-15
+* v0.2.2 -- 2021-09-15
+  * Fix `:src-dirs` defaulting.
   * Remove spurious `println` from `uber` task.
 
 * v0.2.0 e9f027d -- 2021-09-15
