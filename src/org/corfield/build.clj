@@ -3,86 +3,212 @@
 (ns org.corfield.build
   "Common build utilities.
 
-  The following defaults are provided:
+  The following high-level defaults are provided:
+
   :target    \"target\",
   :basis     (create-basis {:project \"deps.edn\"},
   :class-dir (str target \"/classes\"),
-  :jar-file  (format \"%s/%s-%s.jar\" target lib version)
+  :jar-file  (format \"%s/%s-%s.jar\" target lib version),
+  :uber-file (format \"%s/%s-%s.jar\" target lib version)
+             or, if :version is not provided:
+             (format \"%s/%s-standalone.jar\" target lib)
 
   You are expected to provide :lib and :version as needed.
 
-  The following build functions are provided, with the
+  The following build task functions are provided, with the
   specified required and optional hash map options:
 
   clean     -- opt :target,
   deploy    -- req :lib, :version
                opt :target, :class-dir, :jar-file
+               (see docstring for additional options)
   jar       -- req :lib, :version
-               opt :target, :class-dir, :basis, :scm, :src-dirs, :tag, :jar-file,
+               opt :target, :class-dir, :basis, :scm, :src-dirs,
+                   :resource-dirs, :tag, :jar-file
+               (see docstring for additional options)
+  uber      -- req :lib
+               opt :target, :class-dir, :basis, :scm, :src-dirs,
+                   :resource-dirs, :tag, :uber-file, :version
+               (see docstring for additional options)
   run-task  -- [opts aliases]
                opt :java-opts -- defaults to :jvm-opts from aliases
                    :jvm-opts  -- added to :java-opts
                    :main      -- defaults to clojure.main
                    :main-args -- defaults to :main-opts from aliases
-                   :main-opts --
+                   :main-opts -- added to :main-args
   run-tests -- opt :aliases (plus run-task options)
                invokes (run-task opts (into [:test] aliases))
 
   All of the above return the opts hash map they were passed
-  (unlike some of the functions in clojure.tools.build.api)."
-  (:require [clojure.tools.build.api :as b]
-            [clojure.tools.deps.alpha :as t]
-            [deps-deploy.deps-deploy :as dd]))
+  (unlike some of the functions in clojure.tools.build.api).
 
-(def ^:private default-target "target")
-(def ^:private default-basis (b/create-basis {:project "deps.edn"}))
-(defn- default-class-dir [target] (str target "/classes"))
-(defn- default-jar-file [target lib version]
-  (format "%s/%s-%s.jar" target (name lib) version))
+  The following low-level defaults are also provided to make
+  it easier to call the task functions here:
+
+  :ns-compile if :main is provided and :sort is not, this
+              defaults to the :main namespace (class),
+
+  :scm        if :tag is provided, that is used here, else
+              if :version is provided, that is used for :tag
+              here with \"v\" prefixed,
+
+  :src-dirs   [\"src\"]
+
+  :src+dirs   this is a synthetic option that is used for the
+              file/directory copying that is part of `jar` and
+              `uber` and it is computed as :src-dirs plus
+              :resource-dirs, essentially, with the former
+              defaulted as noted above and the latter defaulted
+              to [\"resources\"] just for the copying but otherwise
+              has no default (for `tools.build/write-pom`)."
+  (:require [clojure.string :as str]
+            [clojure.tools.build.api :as b]
+            [clojure.tools.deps.alpha :as t]
+            [deps-deploy.deps-deploy :as dd]
+            [org.corfield.log4j2-conflict-handler
+             :refer [log4j2-conflict-handler]]))
+
+(defn- default-target
+  [target]
+  (or target "target"))
+
+(defn- default-basis
+  [basis]
+  (or basis (b/create-basis {:project "deps.edn"})))
+
+(defn- default-class-dir
+  [class-dir target]
+  (or class-dir (str (default-target target) "/classes")))
+
+(defn- default-jar-file
+  [target lib version]
+  (format "%s/%s-%s.jar" (default-target target) (name lib) version))
 
 (defn clean
   "Remove the target folder."
   [{:keys [target] :as opts}]
   (println "\nCleaning target...")
-  (b/delete {:path (or target default-target)})
+  (b/delete {:path (default-target target)})
   opts)
+
+(defn- jar-opts
+  "Provide sane defaults for jar/uber tasks.
+
+  :lib is required, :version is optional for uber, everything
+  else is optional."
+  [{:keys [basis class-dir conflict-handlers jar-file lib
+           main ns-compile resource-dirs scm sort src-dirs tag
+           target uber-file version]
+    :as   opts}]
+  (let [scm-default   (cond tag     {:tag tag}
+                            version {:tag (str "v" version)})
+        version       (or version "standalone")
+        xxx-file      (default-jar-file target lib version)]
+    (assoc opts
+           :basis      (default-basis basis)
+           :class-dir  (default-class-dir class-dir target)
+           :conflict-handlers
+           (merge log4j2-conflict-handler conflict-handlers)
+           :jar-file   (or    jar-file    xxx-file)
+           :ns-compile (or    ns-compile  (when (and main (not sort))
+                                            [main]))
+           :scm        (merge scm-default scm)
+           :src-dirs   (or    src-dirs    ["src"])
+           :src+dirs   (into  src-dirs    (or resource-dirs ["resources"]))
+           :uber-file  (or    uber-file   xxx-file))))
 
 (defn jar
   "Build the library JAR file.
 
-  Requires: lib, version"
-  [{:keys [target class-dir lib version basis scm src-dirs tag jar-file] :as opts}]
+  Requires: :lib, :version
+
+  Accepts any options that are accepted by:
+  * tools.build/write-pom
+  * tools.build/jar
+
+  Writes pom.xml into META-INF in the :class-dir, then
+  copies :src-dirs + :resource-dirs into :class-dir, then
+  builds :jar-file into :target (directory)."
+  {:arglists '([{:keys [lib version
+                        basis class-dir jar-file main manifest repos
+                        resource-dirs scm src-dirs src-pom tag target]}])}
+  [{:keys [lib version] :as opts}]
   (assert (and lib version) "lib and version are required for jar")
-  (let [target    (or target default-target)
-        class-dir (or class-dir (default-class-dir target))
-        basis     (or basis default-basis)
-        src-dirs  (or src-dirs ["src"])
-        tag       (or tag (str "v" version))
-        jar-file  (or jar-file (default-jar-file target lib version))]
+  (let [{:keys [class-dir jar-file src+dirs] :as opts}
+        (jar-opts opts)]
     (println "\nWriting pom.xml...")
-    (b/write-pom {:class-dir class-dir
-                  :lib       lib
-                  :version   version
-                  :scm       (cond-> (or scm {})
-                               tag (assoc :tag tag))
-                  :basis     basis
-                  :src-dirs  src-dirs})
-    (println "Copying src...")
-    (b/copy-dir {:src-dirs   src-dirs
+    (b/write-pom opts)
+    (println "Copying" (str (str/join ", " src+dirs) "..."))
+    (b/copy-dir {:src-dirs   src+dirs
                  :target-dir class-dir})
-    (println (str "Building jar " jar-file "..."))
-    (b/jar {:class-dir class-dir
-            :jar-file  jar-file}))
+    (println "Building jar" (str jar-file "..."))
+    (b/jar opts))
+  opts)
+
+(defn uber
+  "Build the application uber JAR file.
+
+  Requires: :lib
+
+  Accepts any options that are accepted by:
+  * `tools.build/write-pom`
+  * `tools.build/compile-clj`
+  * `tools.build/uber`
+
+  The uber JAR filename is derived from :lib,
+  and :version if provided.
+
+  If :version is provided, writes pom.xml into
+  META-INF in the :class-dir, then
+
+  Compiles :src-dirs into :class-dir, then
+  copies :src-dirs and :resource-dirs into :class-dir, then
+  builds :uber-file into :target (directory)."
+  {:argslists '([{:keys [lib
+                         basis class-dir compile-opts filter-nses
+                         ns-compile repos resource-dirs scm sort
+                         src-dirs src-pom tag target uber-file version]}])}
+  [{:keys [lib] :as opts}]
+  (assert lib ":lib is required for uber")
+  (let [{:keys [class-dir ns-compile sort src-dirs src+dirs uber-file version]
+         :as   opts}
+        (jar-opts opts)]
+    (println (assoc opts :basis "{...}"))
+    (if version
+      (do
+        (println "\nWriting pom.xml...")
+        (b/write-pom opts))
+      (println "\nSkipping pom.xml because :version was omitted..."))
+    (println "Copying" (str (str/join ", " src+dirs) "..."))
+    (b/copy-dir {:src-dirs   src+dirs
+                 :target-dir class-dir})
+    (if (or ns-compile sort)
+      (do
+        (println "Compiling" (str (str/join ", " src-dirs) "..."))
+        (b/compile-clj opts))
+      (println "Skipping compilation because :main, :ns-compile, and :sort were omitted..."))
+    (println "Building uberjar" (str uber-file "..."))
+    (b/uber opts))
   opts)
 
 (defn deploy
   "Deploy the JAR to Clojars.
 
-  Requires: lib, version"
-  [{:keys [target class-dir lib version jar-file] :as opts}]
-  (assert (and lib version) "lib and version are required for deploy")
-  (let [target    (or target default-target)
-        class-dir (or class-dir (default-class-dir target))
+  Requires: :lib, :version
+
+  Accepts any options that are accepted by:
+  * `deps-deploy/deploy`
+
+  If :artifact is provided, it will be used for the deploy,
+  else :jar-file will be used (making it easy to thread
+  options through `jar` and `deploy`, specifying just :jar-file
+  or relying on the default value computed for :jar-file)."
+  {:arglists '([{:keys [lib version
+                        artifact class-dir installer jar-file pom-file target]}])}
+  [{:keys [lib version class-dir jar-file target] :as opts}]
+  (assert (and lib version) ":lib and :version are required for deploy")
+  (let [target    (default-target target)
+        class-dir (default-class-dir class-dir target)
         jar-file  (or jar-file (default-jar-file target lib version))]
     (dd/deploy (merge {:installer :remote :artifact jar-file
                        :pom-file (b/pom-path {:lib lib :class-dir class-dir})}
@@ -92,11 +218,12 @@
 (defn run-task
   "Run a task based on aliases.
 
-  If :main-args is not provided and not :main-opts are found
+  If :main-args is not provided and no :main-opts are found
   in the aliases, default to the Cognitect Labs' test-runner."
   [{:keys [java-opts jvm-opts main main-args main-opts] :as opts} aliases]
-  (println "\nRunning task for:" aliases)
-  (let [basis    (b/create-basis {:aliases aliases})
+  (let [task     (str/join ", " (map name aliases))
+        _        (println "\nRunning task for:" task)
+        basis    (b/create-basis {:aliases aliases})
         combined (t/combine-aliases basis aliases)
         cmds     (b/java-command
                   {:basis     basis
@@ -109,7 +236,7 @@
                                     main-opts)})
         {:keys [exit]} (b/process cmds)]
     (when-not (zero? exit)
-      (throw (ex-info (str "Task failed for: " aliases) {}))))
+      (throw (ex-info (str "Task failed for: " task) {}))))
   opts)
 
 (defn run-tests

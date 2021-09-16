@@ -12,7 +12,7 @@ your `:build` alias can just be:
 
 ```clojure
   :build {:deps {io.github.seancorfield/build-clj
-                 {:git/tag "v0.1.3" :git/sha "26b884c"}}
+                 {:git/tag "v0.2.0" :git/sha "..."}}
           :ns-default build}
 ```
 
@@ -36,9 +36,11 @@ _[Several functions in `clojure.tools.build.api` return `nil` instead]_
 * `clean`     -- clean the target directory,
 * `deploy`    -- deploy to Clojars,
 * `jar`       -- build the (library) JAR and `pom.xml` files,
+* `uber`      -- build the (application) uber JAR, with optional `pom.xml` file creation and/or AOT compilation,
 * `run-tests` -- run the project's tests.
 
 For `deploy` and `jar`, you must provide at least `:lib` and `:version`.
+For `uber`, you must provide at least `:lib` for the name of the JAR file.
 Everything else has "sane" defaults, but can be overridden.
 
 You might typically have the following tasks in your `build.clj`:
@@ -55,6 +57,17 @@ You might typically have the following tasks in your `build.clj`:
   (-> opts
       (assoc :lib lib :version version)
       (bb/deploy)))
+```
+
+Or if you are working with an application, you might have:
+
+```clojure
+(defn ci "Run the CI pipeline of tests (and build the uberjar)." [opts]
+  (-> opts
+      (assoc :lib lib :main main)
+      (bb/run-tests)
+      (bb/clean)
+      (bb/uber)))
 ```
 
 In addition, there is a `run-task` function that takes an options hash
@@ -110,10 +123,11 @@ The following defaults are provided:
 * `:target`    -- `"target"`,
 * `:basis`     -- `(create-basis {:project "deps.edn"}`,
 * `:class-dir` -- `(str target "/classes")`,
-* `:jar-file`  -- `(format \"%s/%s-%s.jar\" target lib version)`.
+* `:jar-file`  -- `(format \"%s/%s-%s.jar\" target lib version)`,
+* `:uber-file` -- `(format \"%s/%s-%s.jar\" target lib version)` if `:version` is provided, else `(format \"%s/%s-standalone.jar\" target lib)`.
 
 For the functions defined in `org.corfield.build`, you can override
-the defaults as follows:
+the high-level defaults as follows:
 
 * `clean`
   * `:target`,
@@ -122,10 +136,16 @@ the defaults as follows:
   * `:target`, `:class-dir`, `:jar-file`,
 * `jar`
   * Requires: `:lib` and `:version`,
-  * `:target`, `:class-dir`, `:basis`, `:scm`, `:src-dirs`, `:tag` (defaults to `(str "v" version)`), `:jar-file`,
+  * `:target`, `:class-dir`, `:basis`, `:resource-dirs`, `:scm`, `:src-dirs`, `:tag` (defaults to `(str "v" version)`), `:jar-file`,
+* `uber`
+  * Requires: `:lib`,
+  * `:target`, `:class-dir`, `:basis`, `:compile-opts`, `:main`, `:ns-compile`, `:resource-dirs`, `:scm`, `:src-dirs`, `:tag` (defaults to `(str "v" version)` if `:version` provided), `:uber-file`, `:version`
 * `run-tests`
   * `:aliases` -- for any additional aliases beyond `:test` which is always added,
   * Also accepts any options that `run-task` accepts.
+
+See the docstrings of those task functions for more detail on which options
+they can also accept and which additional defaults they offer.
 
 As noted above, `run-task` takes an options hash map and a vector of aliases.
 The following options can be provided to `run-task` to override the default

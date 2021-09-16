@@ -1,3 +1,4 @@
 {:deps
- {io.github.clojure/tools.build {:git/tag "v0.2.2" :git/sha "3049217"}
+ {io.github.clojure/tools.build {:git/tag "v0.4.0" :git/sha "801a22f"}
+  io.github.seancorfield/build-uber-log4j2-handler {:git/tag "v0.1.0" :git/sha "ab8e499"}
   io.github.slipset/deps-deploy {:sha "b4359c5d67ca002d9ed0c4b41b710d7e5a82e3bf"}}}
