@@ -164,7 +164,6 @@ behavior:
 You can see how `build-clj` is used to reduce boilerplate in the
 `build.clj` file of the following projects:
 
-* [`depstar`](https://github.com/seancorfield/depstar/blob/develop/build.clj)
 * [`expectations`](https://github.com/clojure-expectations/clojure-test/blob/develop/build.clj)
 * [`honeysql`](https://github.com/seancorfield/honeysql/blob/develop/build.clj)
 * [`next.jdbc`](https://github.com/seancorfield/next-jdbc/blob/develop/build.clj)
