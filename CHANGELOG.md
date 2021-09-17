@@ -1,6 +1,6 @@
 # Change Log
 
-* v0.3.1 -- 2021-09-17
+* v0.3.1 996ddfa -- 2021-09-17
   * Update `deps-deploy` to 0.2.0 for latest deps and new Maven settings support.
 
 * v0.3.0 fb11811 -- 2021-09-16
