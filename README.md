@@ -1,12 +1,12 @@
 # build-clj
 
-Common build tasks abstracted into a library.
+Common [`tools.build`](https://github.com/clojure/tools.build) tasks abstracted into a library, building on the examples in the [official `tools.build` guide](https://clojure.org/guides/tools_build).
 
-Having implemented `build.clj` in several of my open source projects
+Having implemented `build.clj` (using `tools.build`) in several of my open source projects
 I found there was a lot of repetition across them, so I factored out
 the common functionality into this library.
 
-Since it depends on `tools.build` and
+Since it depends on both `tools.build` and
 [Erik Assum's `deps-deploy`](https://github.com/slipset/deps-deploy),
 your `:build` alias can just be:
 
@@ -28,20 +28,24 @@ Your `build.clj` can start off as follows:
 (def version (format "1.0.%s" (b/git-count-revs nil)))
 ```
 
+## Tasks Provided
+
 The following common build tasks are provided, all taking an options
 hash map as the single argument _and returning that hash map unchanged_
 so you can reliably thread the build tasks.
 _[Several functions in `clojure.tools.build.api` return `nil` instead]_
 
-* `clean`     -- clean the target directory,
-* `deploy`    -- deploy to Clojars,
-* `jar`       -- build the (library) JAR and `pom.xml` files,
-* `uber`      -- build the (application) uber JAR, with optional `pom.xml` file creation and/or AOT compilation,
-* `run-tests` -- run the project's tests.
+* `clean`     -- clean the target directory (wraps `delete` from `tools.build`),
+* `deploy`    -- deploy to Clojars (wraps `deploy` from `deps-deploy`),
+* `jar`       -- build the (library) JAR and `pom.xml` files (wraps `create-basis`, `write-pom`, `copy-dir`, and `jar` from `tools.build`),
+* `uber`      -- build the (application) uber JAR, with optional `pom.xml` file creation and/or AOT compilation (wraps `create-basis`, `write-pom`, `copy-dir`, `compile-clj`, and `uber` from `tools.build`),
+* `run-tests` -- run the project's tests (wraps `create-basis`, `java-command`, and `process` from `tools.build`, to run the `:main-opts` in your `:test` alias).
 
 For `deploy` and `jar`, you must provide at least `:lib` and `:version`.
 For `uber`, you must provide at least `:lib` or `:uber-file` for the name of the JAR file.
 Everything else has "sane" defaults, but can be overridden.
+
+## Typical `build.clj` with `build-clj`
 
 You might typically have the following tasks in your `build.clj`:
 
@@ -70,11 +74,9 @@ Or if you are working with an application, you might have:
       (bb/uber)))
 ```
 
-In addition, there is a `run-task` function that takes an options hash
-map and a vector of aliases. This runs an arbitrary Clojure main function,
-determined by those aliases, in a subprocess. `run-tests` uses this by
-adding a `:test` alias and in the absence of any `:main-opts` behind those
-aliases, assumes it should run `cognitect.test-runner`'s `-main` function.
+> Note: this `uber` task in `build-clj` supplies the [log4j2 conflict handler](https://github.com/seancorfield/build-uber-log4j2-handler) to the underlying `uber` task of `tools.build` so that you don't have to worry about the plugins cache files being merged.
+
+## Running Tests
 
 If you want a `run-tests` task in your `build.clj`, independent of the `ci`
 task shown above, the following can be added:
@@ -83,6 +85,52 @@ task shown above, the following can be added:
 (defn run-tests "Run the tests." [opts]
   (-> opts (bb/run-tests)))
 ```
+
+By default, the `run-tests` task will run whatever is in your `:test` alias
+but if there is no `:main-opts`, it assumes Cognitect's `test-runner`:
+
+```clojure
+  :test
+  {:extra-paths ["test"]
+   :extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}
+                io.github.cognitect-labs/test-runner
+                {:git/tag "v0.5.0" :git/sha "48c3c67"}}
+   :exec-fn cognitect.test-runner.api/test}
+```
+
+The above alias allows for tests to be run directly via:
+
+```bash
+clojure -X:test
+```
+
+The `run-tests` task above would run the tests as if the `:test` alias
+also contained:
+
+```clojure
+   :main-opts ["-m" "cognitect.test-runner"]
+```
+
+If you want to use a different test runner with `build-clj`, just provide
+different dependencies and supply `:main-opts`:
+
+```clojure
+  ;; a :test alias that specifies the kaocha runner:
+  :test
+  {:extra-paths ["test"]
+   :extra-deps {lambdaisland/kaocha {:mvn/version "1.0.887"}}
+   :main-opts ["-m" "kaocha.runner"]}
+```
+
+With this `:test` alias, the `run-tests` task above would run your test using Kaocha.
+
+## Running Additional Programs
+
+In addition, there is a `run-task` function that takes an options hash
+map and a vector of aliases. This runs an arbitrary Clojure main function,
+determined by those aliases, in a subprocess. `run-tests` uses this by
+adding a `:test` alias and in the absence of any `:main-opts` behind those
+aliases, assumes it should run `cognitect.test-runner`'s `-main` function.
 
 `run-task` picks up `:jvm-opts` and `:main-opts` from the specified aliases
 and uses them as the `:java-args` and `:main-args` respectively in a call to
