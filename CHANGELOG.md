@@ -1,6 +1,6 @@
 # Change Log
 
-* v0.4.0 in progress
+* v0.4.0 -- 2012-09-22
   * Address #6 by providing `install` task based on `tools.build` (and deprecating `:installer :local` for `deploy` task).
   * Update `tools.build` to v0.5.1 21da7d4.
 

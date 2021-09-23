@@ -231,7 +231,7 @@
   [{:keys [lib version class-dir installer jar-file target] :as opts}]
   (assert (and lib version) ":lib and :version are required for deploy")
   (when (and installer (not= :remote installer))
-    (println installer ":installer is deprecated -- use install task for local deployment"))
+    (println ":installer" installer "is deprecated -- use install task for local deployment"))
   (let [target    (default-target target)
         class-dir (default-class-dir class-dir target)
         jar-file  (or jar-file (default-jar-file target lib version))]
