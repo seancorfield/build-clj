@@ -1,5 +1,9 @@
 # Change Log
 
+* v0.4.0 in progress
+  * Address #6 by providing `install` task based on `tools.build` (and deprecating `:installer :local` for `deploy` task).
+  * Update `tools.build` to v0.5.1 21da7d4.
+
 * v0.3.1 996ddfa -- 2021-09-17
   * Update `deps-deploy` to 0.2.0 for latest deps and new Maven settings support.
 

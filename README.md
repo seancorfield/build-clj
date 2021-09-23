@@ -37,11 +37,12 @@ _[Several functions in `clojure.tools.build.api` return `nil` instead]_
 
 * `clean`     -- clean the target directory (wraps `delete` from `tools.build`),
 * `deploy`    -- deploy to Clojars (wraps `deploy` from `deps-deploy`),
+* `install`   -- install the JAR locally (wraps `create-basis` and `install` from `tools.build`),
 * `jar`       -- build the (library) JAR and `pom.xml` files (wraps `create-basis`, `write-pom`, `copy-dir`, and `jar` from `tools.build`),
 * `uber`      -- build the (application) uber JAR, with optional `pom.xml` file creation and/or AOT compilation (wraps `create-basis`, `write-pom`, `copy-dir`, `compile-clj`, and `uber` from `tools.build`),
 * `run-tests` -- run the project's tests (wraps `create-basis`, `java-command`, and `process` from `tools.build`, to run the `:main-opts` in your `:test` alias).
 
-For `deploy` and `jar`, you must provide at least `:lib` and `:version`.
+For `deploy`, `install`, and `jar`, you must provide at least `:lib` and `:version`.
 For `uber`, you must provide at least `:lib` or `:uber-file` for the name of the JAR file.
 Everything else has "sane" defaults, but can be overridden.
 
@@ -56,6 +57,11 @@ You might typically have the following tasks in your `build.clj`:
       (bb/run-tests)
       (bb/clean)
       (bb/jar)))
+
+(defn install "Install the JAR locally." [opts]
+  (-> opts
+      (assoc :lib lib :version version)
+      (bb/install)))
 
 (defn deploy "Deploy the JAR to Clojars." [opts]
   (-> opts
@@ -122,7 +128,7 @@ different dependencies and supply `:main-opts`:
    :main-opts ["-m" "kaocha.runner"]}
 ```
 
-With this `:test` alias, the `run-tests` task above would run your test using Kaocha.
+With this `:test` alias, the `run-tests` task above would run your tests using Kaocha.
 
 ## Running Additional Programs
 
@@ -182,6 +188,9 @@ the high-level defaults as follows:
 * `deploy`
   * Requires: `:lib` and `:version`,
   * `:target`, `:class-dir`, `:jar-file`,
+* `install`
+  * Requires: `:lib` and `:version`,
+  * `:target`, `:class-dir`, `:basis`, `:jar-file`,
 * `jar`
   * Requires: `:lib` and `:version`,
   * `:target`, `:class-dir`, `:basis`, `:resource-dirs`, `:scm`, `:src-dirs`, `:tag` (defaults to `(str "v" version)`), `:jar-file`,

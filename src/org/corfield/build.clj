@@ -22,6 +22,9 @@
   deploy    -- req :lib, :version
                opt :target, :class-dir, :jar-file
                (see docstring for additional options)
+  install   -- req :lib, :version
+               opt :target, :class-dir, :basis, :jar-file
+               (see docstring for additional options)
   jar       -- req :lib, :version
                opt :target, :class-dir, :basis, :scm, :src-dirs,
                    :resource-dirs, :tag, :jar-file
@@ -191,6 +194,26 @@
     (b/uber opts))
   opts)
 
+(defn install
+  "Install the JAR to the local Maven repo cache.
+
+  Requires: :lib, :version
+
+  Accepts any options that are accepted by:
+  * `tools.build/install`"
+  {:arglists '([{:keys [lib version
+                        basis class-dir classifier jar-file target]}])}
+  [{:keys [lib version basis class-dir classifier jar-file target] :as opts}]
+  (assert (and lib version) ":lib and :version are required for install")
+  (let [target (default-target target)]
+    (b/install {:basis      (default-basis basis)
+                :lib        lib
+                :classifier classifier
+                :version    version
+                :jar-file   (or jar-file (default-jar-file target lib version))
+                :class-dir  (default-class-dir class-dir target)})
+    opts))
+
 (defn deploy
   "Deploy the JAR to Clojars.
 
@@ -205,8 +228,10 @@
   or relying on the default value computed for :jar-file)."
   {:arglists '([{:keys [lib version
                         artifact class-dir installer jar-file pom-file target]}])}
-  [{:keys [lib version class-dir jar-file target] :as opts}]
+  [{:keys [lib version class-dir installer jar-file target] :as opts}]
   (assert (and lib version) ":lib and :version are required for deploy")
+  (when (and installer (not= :remote installer))
+    (println installer ":installer is deprecated -- use install task for local deployment"))
   (let [target    (default-target target)
         class-dir (default-class-dir class-dir target)
         jar-file  (or jar-file (default-jar-file target lib version))]
