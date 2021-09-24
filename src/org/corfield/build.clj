@@ -284,7 +284,8 @@
       (println ns-doc))
     (dorun
       (map (comp #'repl/print-doc meta)   ; Note: print-doc is private, hence the use of the var
-           (->> build-ns-sym
-                ns-publics
-                sort
-                vals)))))
+           (filter (comp fn? var-get)
+                   (->> build-ns-sym
+                        ns-publics
+                        sort
+                        vals))))))
