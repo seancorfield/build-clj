@@ -46,6 +46,8 @@ For `deploy`, `install`, and `jar`, you must provide at least `:lib` and `:versi
 For `uber`, you must provide at least `:lib` or `:uber-file` for the name of the JAR file.
 Everything else has "sane" defaults, but can be overridden.
 
+> Note: you can always get help for a `build.clj` file by running `clojure -A:deps -T:build help/doc` which uses the `help/doc` function from the built-in `:deps` alias in the root `deps.edn` file.
+
 ## Typical `build.clj` with `build-clj`
 
 You might typically have the following tasks in your `build.clj`:
