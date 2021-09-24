@@ -71,7 +71,6 @@
   (:require [clojure.string :as str]
             [clojure.tools.build.api :as b]
             [clojure.tools.deps.alpha :as t]
-            [clojure.repl :as repl]
             [deps-deploy.deps-deploy :as dd]
             [org.corfield.log4j2-conflict-handler
              :refer [log4j2-conflict-handler]]))
@@ -276,6 +275,12 @@
   [{:keys [aliases] :as opts}]
   (-> opts (run-task (into [:test] aliases))))
 
+; Adapted from clojure.repl/print-doc (a private fn)
+(defn- print-doc [{nm :name :keys [arglists doc]}]
+  (println "-------------------------")
+  (println (str nm (when arglists (str " " arglists))))
+  (when doc (println "  " doc)))
+
 (defn help
   "Print help for your build. Returns nil."
   [build-ns-sym]
@@ -283,8 +288,8 @@
     (if-let [ns-doc (:doc (meta build-ns))]
       (println ns-doc))
     (dorun
-      (map (comp #'repl/print-doc meta)   ; Note: print-doc is private, hence the use of the var
-           (filter (comp fn? var-get)
+      (map (comp print-doc meta)
+           (filter (comp fn? var-get)    ; Here we make the assumption that all public fns in the build ns are tasks
                    (->> build-ns-sym
                         ns-publics
                         sort
