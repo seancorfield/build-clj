@@ -279,7 +279,7 @@
 (defn help
   "Print help for your build. Returns nil."
   [build-ns-sym]
-  (if-let [build-ns (find-ns build-ns-sym)]
+  (when-let [build-ns (find-ns build-ns-sym)]
     (if-let [ns-doc (:doc (meta build-ns))]
       (println ns-doc))
     (dorun
