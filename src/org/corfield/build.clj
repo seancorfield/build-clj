@@ -41,6 +41,10 @@
                    :main-opts -- added to :main-args
   run-tests -- opt :aliases (plus run-task options)
                invokes (run-task opts (into [:test] aliases))
+  help      -- namespace-sym
+               prints help for your build, based on the docstrings in
+               the given namespace (which would normally be your project's
+               build script)
 
   All of the above return the opts hash map they were passed
   (unlike some of the functions in clojure.tools.build.api).
@@ -67,6 +71,7 @@
   (:require [clojure.string :as str]
             [clojure.tools.build.api :as b]
             [clojure.tools.deps.alpha :as t]
+            [clojure.repl :as repl]
             [deps-deploy.deps-deploy :as dd]
             [org.corfield.log4j2-conflict-handler
              :refer [log4j2-conflict-handler]]))
@@ -270,3 +275,16 @@
   Always adds :test to the aliases."
   [{:keys [aliases] :as opts}]
   (-> opts (run-task (into [:test] aliases))))
+
+(defn help
+  "Print help for your build. Returns nil."
+  [build-ns-sym]
+  (if-let [build-ns (find-ns build-ns-sym)]
+    (if-let [ns-doc (:doc (meta build-ns))]
+      (println ns-doc))
+    (dorun
+      (map (comp #'repl/print-doc meta)   ; Note: print-doc is private, hence the use of the var
+           (->> build-ns-sym
+                ns-publics
+                sort
+                vals)))))

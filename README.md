@@ -41,6 +41,7 @@ _[Several functions in `clojure.tools.build.api` return `nil` instead]_
 * `jar`       -- build the (library) JAR and `pom.xml` files (wraps `create-basis`, `write-pom`, `copy-dir`, and `jar` from `tools.build`),
 * `uber`      -- build the (application) uber JAR, with optional `pom.xml` file creation and/or AOT compilation (wraps `create-basis`, `write-pom`, `copy-dir`, `compile-clj`, and `uber` from `tools.build`),
 * `run-tests` -- run the project's tests (wraps `create-basis`, `java-command`, and `process` from `tools.build`, to run the `:main-opts` in your `:test` alias).
+* `help`      -- prints help for your build, identified by its namespace symbol (typically `'build`). Returns nil.
 
 For `deploy`, `install`, and `jar`, you must provide at least `:lib` and `:version`.
 For `uber`, you must provide at least `:lib` or `:uber-file` for the name of the JAR file.
@@ -67,6 +68,9 @@ You might typically have the following tasks in your `build.clj`:
   (-> opts
       (assoc :lib lib :version version)
       (bb/deploy)))
+
+(defn help "Display this help message." [opts]
+  (bb/help 'build))
 ```
 
 Or if you are working with an application, you might have:
@@ -78,6 +82,9 @@ Or if you are working with an application, you might have:
       (bb/run-tests)
       (bb/clean)
       (bb/uber)))
+
+(defn help "Display this help message." [opts]
+  (bb/help 'build))
 ```
 
 > Note: this `uber` task in `build-clj` supplies the [log4j2 conflict handler](https://github.com/seancorfield/build-uber-log4j2-handler) to the underlying `uber` task of `tools.build` so that you don't have to worry about the plugins cache files being merged.
