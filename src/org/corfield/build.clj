@@ -71,21 +71,42 @@
             [org.corfield.log4j2-conflict-handler
              :refer [log4j2-conflict-handler]]))
 
-(defn- default-target
-  [target]
-  (or target "target"))
+(defn default-target
+  "Return the default target directory name."
+  {:arglists '([])}
+  ([] (default-target nil))
+  ([target]
+   (or target "target")))
 
-(defn- default-basis
-  [basis]
-  (or basis (b/create-basis {})))
+(defn default-basis
+  "Return the default basis."
+  {:arglists '([])}
+  ([] (default-basis nil))
+  ([basis]
+   (or basis (b/create-basis {}))))
 
-(defn- default-class-dir
-  [class-dir target]
-  (or class-dir (str (default-target target) "/classes")))
+(defn default-class-dir
+  "Return the default `class-dir`.
 
-(defn- default-jar-file
-  [target lib version]
-  (format "%s/%s-%s.jar" (default-target target) (name (or lib 'application)) version))
+  May be passed a non-default target directory name."
+  {:arglists '([] [target])}
+  ([] (default-class-dir nil nil))
+  ([target] (default-class-dir nil target))
+  ([class-dir target]
+   (or class-dir (str (default-target target) "/classes"))))
+
+(defn default-jar-file
+  "Given the `lib` and `version`, return the default JAR
+  filename.
+
+  `lib` can be omitted and will default to `'application`
+  (for uberjar usage).
+
+  May be passed a non-default target directory name."
+  ([version] (default-jar-file nil nil version))
+  ([lib version] (default-jar-file nil lib version))
+  ([target lib version]
+   (format "%s/%s-%s.jar" (default-target target) (name (or lib 'application)) version)))
 
 (defn clean
   "Remove the target folder."

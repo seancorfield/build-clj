@@ -182,6 +182,12 @@ The following defaults are provided:
 * `:jar-file`  -- `(format \"%s/%s-%s.jar\" target lib version)`,
 * `:uber-file` -- `(format \"%s/%s-%s.jar\" target lib version)` if `:version` is provided, else `(format \"%s/%s-standalone.jar\" target lib)`.
 
+As of v0.5.0, the four functions that compute those defaults are exposed for use in your own `build.clj` files:
+* `(default-target)`    -- return the default for `:target`,
+* `(default-basis)`     -- return the default for `:basis`,
+* `(default-class-dir)` -- return the default for `:class-dir`; `(default-class-dir target)` is also available,
+* `(default-jar-file lib version)` -- return the default for `:jar-file` or `:uber-file`; `(default-jar-file target lib version)` and `(default-jar-file version)` are also available (the latter defaults `:lib` to `'application`).
+
 For the functions defined in `org.corfield.build`, you can override
 the high-level defaults as follows:
 
