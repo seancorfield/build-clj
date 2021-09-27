@@ -1,6 +1,6 @@
 # Change Log
 
-* v0.5.0 -- 2021-09-27
+* v0.5.0 2ceb95a -- 2021-09-27
   * Address #10 by exposing the four `default-*` functions used to compute `target`, `class-dir`, `basis`, and `jar-file` (`uber-file`).
 
 * v0.4.0 54e39ae -- 2021-09-22
