@@ -115,6 +115,24 @@
   (b/delete {:path (default-target target)})
   opts)
 
+(defn- lifted-basis
+  "This creates a basis where source deps have their primary
+  external dependencies lifted to the top-level, such as is
+  needed by Polylith and possibly other monorepo setups."
+  []
+  (let [default-libs  (:libs (b/create-basis))
+        source-dep?   #(not (:mvn/version (get default-libs %)))
+        lifted-deps
+        (reduce-kv (fn [deps lib {:keys [dependents] :as coords}]
+                     (let [version (:mvn/version coords)]
+                       (if (and version (some source-dep? dependents))
+                         (assoc deps lib {:mvn/version version})
+                         deps)))
+                   {}
+                   default-libs)]
+    (-> (b/create-basis {:extra {:deps lifted-deps}})
+        (update :libs #(into {} (filter (comp :mvn/version val)) %)))))
+
 (defn- jar-opts
   "Provide sane defaults for jar/uber tasks.
 
@@ -122,9 +140,16 @@
   else is optional."
   [{:keys [basis class-dir conflict-handlers jar-file lib
            main ns-compile resource-dirs scm sort src-dirs tag
-           target uber-file version]
+           target transitive uber-file version]
     :as   opts}]
-  (let [scm-default   (cond tag     {:tag tag}
+  (when transitive
+    (assert (nil? basis) ":transitive cannot be true when :basis is provided"))
+  (let [basis         (if transitive
+                        (lifted-basis)
+                        (default-basis basis))
+        directory?    #(let [f (java.io.File. %)]
+                         (and (.exists f) (.isDirectory f)))
+        scm-default   (cond tag     {:tag tag}
                             version {:tag (str "v" version)})
         src-default   (or src-dirs ["src"])
         version       (or version "standalone")
@@ -139,7 +164,10 @@
                                             [main]))
            :scm        (merge scm-default scm)
            :src-dirs   src-default
-           :src+dirs   (into  src-default (or resource-dirs ["resources"]))
+           :src+dirs   (if transitive
+                         (filter directory? (:classpath-roots basis))
+                         (into src-default
+                               (or resource-dirs ["resources"])))
            :uber-file  (or    uber-file   xxx-file))))
 
 (defn jar
@@ -153,17 +181,26 @@
 
   Writes pom.xml into META-INF in the :class-dir, then
   copies :src-dirs + :resource-dirs into :class-dir, then
-  builds :jar-file into :target (directory)."
+  builds :jar-file into :target (directory).
+
+  If you are building a JAR in a monorepo and rely on
+  :local/root dependencies for the actual source components,
+  such as in a Polylith project, pass :transitive true to
+  use a 'lifted' basis and to ensure all source files are
+  copied into the JAR."
   {:arglists '([{:keys [lib version
                         basis class-dir jar-file main manifest repos
-                        resource-dirs scm src-dirs src-pom tag target]}])}
+                        resource-dirs scm src-dirs src-pom tag target
+                        transitive]}])}
   [{:keys [lib version] :as opts}]
   (assert (and lib version) "lib and version are required for jar")
   (let [{:keys [class-dir jar-file src+dirs] :as opts}
-        (jar-opts opts)]
+        (jar-opts opts)
+        current-dir (System/getProperty "user.dir")
+        current-rel #(str/replace % (str current-dir "/") "")]
     (println "\nWriting pom.xml...")
     (b/write-pom opts)
-    (println "Copying" (str (str/join ", " src+dirs) "..."))
+    (println "Copying" (str (str/join ", " (map current-rel src+dirs)) "..."))
     (b/copy-dir {:src-dirs   src+dirs
                  :target-dir class-dir})
     (println "Building jar" (str jar-file "..."))

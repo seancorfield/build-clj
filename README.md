@@ -12,7 +12,7 @@ your `:build` alias can just be:
 
 ```clojure
   :build {:deps {io.github.seancorfield/build-clj
-                 {:git/tag "v0.5.0" :git/sha "2ceb95a"}}
+                 {:git/tag "v0.5.1" :git/sha "..."}}
           :ns-default build}
 ```
 
@@ -223,6 +223,22 @@ behavior:
 * `:main-opts` -- used _in addition to_ the `:main-args` vector or _in addition to_ `:main-opts` from the aliases.
 
 > Note: if `:main-args` is not provided and there are no `:main-opts` in the aliases provided, the default will be `["-m" "cognitect.test-runner"]` to ensure that `run-tests` works by default without needing `:main-opts` in the `:test` alias (since it is common to want to start a REPL with `clj -A:test`).
+
+## Monorepos and Library JARs
+
+If you are working in a monorepo, such as the [Polylith architecture](https://polylith.gitbook.io/), and need
+to build library JAR files from projects that rely on `:local/root` dependencies to specify other source
+components, you will generally want to pass `:transitive true` to the `jar` task.
+
+Without `:transitive true`, i.e., by default, the `jar` task generates a `pom.xml` from just the dependencies
+specified directly in the project `deps.edn` and does not consider dependencies from local source subprojects.
+In addition, by default `jar` only copies `src` and `resources` from the current project folder.
+
+With `:transitive true`, the `jar` task includes direct dependencies from local source subprojects when
+generating the `pom.xml` and will also copy all folders found on the classpath -- which is generally all
+of the `src` and `resources` folders from those local source subprojects.
+
+> Note: git dependencies look like local source subprojects so they will also be included if you specify `:transitive true` -- but your `pom.xml` will not contain those dependencies anyway so users of your library JAR would have a time if git folders are not copied into the JAR!
 
 ## Projects Using `build-clj`
 
