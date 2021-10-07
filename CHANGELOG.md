@@ -1,6 +1,6 @@
 # Change Log
 
-* v0.5.1 -- 2021-10-07
+* v0.5.1 dc121d6 -- 2021-10-07
   * Support Polylith and other monorepo projects better when building library JARs by adding `:transitive` option to `jar` task.
 
 * v0.5.0 2ceb95a -- 2021-09-27
