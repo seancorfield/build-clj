@@ -1,6 +1,6 @@
 # Change Log
 
-* v0.5.2 -- 2021-10-11
+* v0.5.2 8f75b81 -- 2021-10-11
   * Update `tools.build` to v0.6.1 515b334 (for non-replacement on some non-text files).
 
 * v0.5.1 dc121d6 -- 2021-10-07
