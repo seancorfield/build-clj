@@ -93,19 +93,22 @@ You can provide a template for that file, that contains information that
 as `<description>` and `<licenses>`. Whilst that file _could_ be called
 `pom.xml` and would get picked up automatically by `write-pom` as the source POM,
 that would leave you with a potentially incomplete and/or outdated file.
-Instead, consider using `pom_template.xml` or something similar, and
-specify `:src-pom "pom_template.xml"` as an additional option to `build-clj`'s
+Instead, consider using `template/pom.xml` or something similar, and
+specify `:src-pom "template/pom.xml"` as an additional option to `build-clj`'s
 `jar` task:
-
 
 ```clojure
 (defn ci "Run the CI pipeline of tests (and build the JAR)." [opts]
   (-> opts
-      (assoc :lib lib :version version :src-pom "pom_template.xml")
+      (assoc :lib lib :version version :src-pom "template/pom.xml")
       (bb/run-tests)
       (bb/clean)
       (bb/jar)))
 ```
+
+`template/pom.xml` is suggested rather than, say `pom_template.xml` at the
+root, so that GitHub Actions' `setup_java` still find it and recognizes the
+repo as being Maven-based for caching purposes (it looks for `**/pom.xml`).
 
 ## Running Tests
 
