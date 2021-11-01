@@ -84,6 +84,29 @@ Or if you are working with an application, you might have:
 
 > Note: this `uber` task in `build-clj` supplies the [log4j2 conflict handler](https://github.com/seancorfield/build-uber-log4j2-handler) to the underlying `uber` task of `tools.build` so that you don't have to worry about the plugins cache files being merged.
 
+### `pom.xml` and `jar`
+
+By default, the `jar` task calls `tools.build`'s `write-pom` function and
+will write `pom.xml` into `target/classes/META-INF/maven/<group>/<artifact>/pom.xml`.
+You can provide a template for that file, that contains information that
+`write-pom` does not provide (and does not offer options to override), such
+as `<description>` and `<licenses>`. Whilst that file _could_ be called
+`pom.xml` and would get picked up automatically by `write-pom` as the source POM,
+that would leave you with a potentially incomplete and/or outdated file.
+Instead, consider using `pom_template.xml` or something similar, and
+specify `:src-pom "pom_template.xml"` as an additional option to `build-clj`'s
+`jar` task:
+
+
+```clojure
+(defn ci "Run the CI pipeline of tests (and build the JAR)." [opts]
+  (-> opts
+      (assoc :lib lib :version version :src-pom "pom_template.xml")
+      (bb/run-tests)
+      (bb/clean)
+      (bb/jar)))
+```
+
 ## Running Tests
 
 If you want a `run-tests` task in your `build.clj`, independent of the `ci`
