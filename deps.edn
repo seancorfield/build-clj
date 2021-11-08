@@ -1,4 +1,4 @@
 {:deps
- {io.github.clojure/tools.build {:git/tag "v0.6.1" :git/sha "515b334"}
+ {io.github.clojure/tools.build {:git/tag "v0.6.3" :git/sha "4a1b53a"}
   io.github.seancorfield/build-uber-log4j2-handler {:git/tag "v0.1.0" :git/sha "ab8e499"}
   slipset/deps-deploy {:mvn/version "0.2.0"}}}
