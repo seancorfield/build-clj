@@ -1,6 +1,6 @@
 # Change Log
 
-* v0.5.3 in progress
+* v0.5.3 dbf7321 -- 2021-11-08
   * Update `tools.build` to v0.6.3 4a1b53a for updated git deps handling.
 
 * v0.5.2 8f75b81 -- 2021-10-11
