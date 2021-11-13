@@ -1,5 +1,8 @@
 # Change Log
 
+* v0.5.4 -- 2021-11-13
+  * Update `tools.build` to v0.6.5 a0c3ff6 for the improved `compile-clj` and git commands.
+
 * v0.5.3 dbf7321 -- 2021-11-08
   * Update `tools.build` to v0.6.3 4a1b53a for updated git deps handling.
 
