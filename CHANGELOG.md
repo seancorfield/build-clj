@@ -1,6 +1,6 @@
 # Change Log
 
-* v0.5.5 -- 2021-11-26
+* v0.5.5 0527130 -- 2021-11-26
   * Update `tools.build` to v0.6.8 d79ae84 for `git-process` and various bug fixes.
 
 * v0.5.4 bc9c0cc -- 2021-11-13
