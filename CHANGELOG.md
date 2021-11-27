@@ -1,5 +1,8 @@
 # Change Log
 
+* v0.5.5 -- 2021-11-26
+  * Update `tools.build` to v0.6.8 d79ae84 for `git-process` and various bug fixes.
+
 * v0.5.4 bc9c0cc -- 2021-11-13
   * Update `tools.build` to v0.6.5 a0c3ff6 for the improved `compile-clj` and git commands.
 
