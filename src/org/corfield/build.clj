@@ -67,7 +67,6 @@
   (:require [clojure.string :as str]
             [clojure.tools.build.api :as b]
             [clojure.tools.deps.alpha :as t]
-            [deps-deploy.deps-deploy :as dd]
             [org.corfield.log4j2-conflict-handler
              :refer [log4j2-conflict-handler]]))
 
@@ -292,10 +291,13 @@
     (println ":installer" installer "is deprecated -- use install task for local deployment"))
   (let [target    (default-target target)
         class-dir (default-class-dir class-dir target)
-        jar-file  (or jar-file (default-jar-file target lib version))]
-    (dd/deploy (merge {:installer :remote :artifact jar-file
-                       :pom-file (b/pom-path {:lib lib :class-dir class-dir})}
-                      opts)))
+        jar-file  (or jar-file (default-jar-file target lib version))
+        dd-deploy (try (requiring-resolve 'deps-deploy.deps-deploy/deploy) (catch Throwable _))]
+    (if dd-deploy
+      (dd-deploy (merge {:installer :remote :artifact jar-file
+                         :pom-file (b/pom-path {:lib lib :class-dir class-dir})}
+                        opts))
+      (throw (ex-info "deps-deploy is not available in the 'slim' build-clj" {}))))
   opts)
 
 (defn run-task
