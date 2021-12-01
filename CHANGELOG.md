@@ -1,6 +1,6 @@
 # Change Log
 
-* v0.6.0 -- 2021-12-01
+* v0.6.0 2451bea -- 2021-12-01
   * Provide a "slim" entry point that does not include `deps-deploy`.
 
 * v0.5.5 0527130 -- 2021-11-26
