@@ -139,7 +139,7 @@ but if there is no `:main-opts`, it assumes Cognitect's `test-runner`:
 ```clojure
   :test
   {:extra-paths ["test"]
-   :extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}
+   :extra-deps {org.clojure/test.check {:mvn/version "1.1.1"}
                 io.github.cognitect-labs/test-runner
                 {:git/tag "v0.5.0" :git/sha "48c3c67"}}
    :exec-fn cognitect.test-runner.api/test}
