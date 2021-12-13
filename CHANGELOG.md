@@ -1,6 +1,6 @@
 # Change Log
 
-* v0.6.2 -- 2021-12-13
+* v0.6.2 97c275a -- 2021-12-13
   * Update `tools.build` to v0.7.2 0361dde for various enhancements and bug fixes.
 
 * v0.6.1 6e962ef -- 2021-12-10
