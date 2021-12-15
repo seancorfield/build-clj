@@ -12,7 +12,7 @@ your `:build` alias can just be:
 
 ```clojure
   :build {:deps {io.github.seancorfield/build-clj
-                 {:git/tag "v0.6.2" :git/sha "97c275a"}}
+                 {:git/tag "v0.6.3" :git/sha "9b8e09b"}}
           :ns-default build}
 ```
 
@@ -35,7 +35,7 @@ not building JAR files at all) -- then you can specify a "slim" entry point to
 
 ```clojure
   :build {:deps {io.github.seancorfield/build-clj
-                 {:git/tag "v0.6.2" :git/sha "97c275a"
+                 {:git/tag "v0.6.3" :git/sha "9b8e09b"
                   ;; omits deps-deploy dependency:
                   :deps/root "slim"}}
           :ns-default build}
