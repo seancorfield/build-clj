@@ -1,6 +1,6 @@
 # Change Log
 
-* v0.6.6 -- 2022-01-04
+* v0.6.6 171d5f1 -- 2022-01-04
   * Update `build-uber-log4j2-handler` to v0.1.4 for updated log4j2 dependency.
 
 * v0.6.5 972031a -- 2021-12-23
