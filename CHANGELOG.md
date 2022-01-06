@@ -1,6 +1,6 @@
 # Change Log
 
-* v0.6.7 in progress
+* v0.6.7 22c2d09 -- 2022-01-05
   * Update `build-uber-log4j2-handler` to v0.1.5 and `tools.build` to v0.7.5 for various bug fixes.
 
 * v0.6.6 171d5f1 -- 2022-01-04
