@@ -6,6 +6,8 @@ Having implemented `build.clj` (using `tools.build`) in several of my open sourc
 I found there was a lot of repetition across them, so I factored out
 the common functionality into this library.
 
+## Use with `build.clj`
+
 Since it depends on both `tools.build` and
 [Erik Assum's `deps-deploy`](https://github.com/slipset/deps-deploy),
 your `:build` alias can just be:
@@ -39,6 +41,28 @@ not building JAR files at all) -- then you can specify a "slim" entry point to
                   ;; omits deps-deploy dependency:
                   :deps/root "slim"}}
           :ns-default build}
+```
+
+## Standalone CLI Usage
+
+While `build-clj` is intended primarily for use with a `build.clj` file, you
+can use it directly from the CLI without a `build.clj` file for many common
+operations.
+
+Assuming you have a `:build` alias as above (with or without `:ns-default`),
+you could run commands like this:
+
+```
+# run the tests using default options:
+clojure -T:build org.corfield.build/run-tests
+# clean the target folder:
+clojure -T:build org.corfield.build/clean
+# build a library JAR:
+clojure -T:build org.corfield.build/jar :lib myname/mylib :version '"1.0.123"'
+# deploy that library to Clojars:
+clojure -T:build org.corfield.build/deploy :lib myname/mylib :version '"1.0.123"'
+# build an application uberjar:
+clojure -T:build org.corfield.build/uber :lib myname/myapp :main my.app.core
 ```
 
 ## Tasks Provided
