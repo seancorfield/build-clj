@@ -1,6 +1,6 @@
 # Change Log
 
-* v0.7.0 -- 2022-02-24
+* v0.7.0 5d2cb60 -- 2022-02-24
   * Update `tools.build` to v0.8.0 for various enhancements and bug fixes.
 
 * v0.6.7 22c2d09 -- 2022-01-05
