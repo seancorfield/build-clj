@@ -294,7 +294,7 @@
         jar-file  (or jar-file (default-jar-file target lib version))
         dd-deploy (try (requiring-resolve 'deps-deploy.deps-deploy/deploy) (catch Throwable _))]
     (if dd-deploy
-      (dd-deploy (merge {:installer :remote :artifact jar-file
+      (dd-deploy (merge {:installer :remote :artifact (b/resolve-path jar-file)
                          :pom-file (b/pom-path {:lib lib :class-dir class-dir})}
                         opts))
       (throw (ex-info "deps-deploy is not available in the 'slim' build-clj" {}))))

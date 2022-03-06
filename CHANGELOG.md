@@ -1,5 +1,8 @@
 # Change Log
 
+* v0.7.next in progress
+  * Fix [#18](https://github.com/seancorfield/build-clj/issues/18) by using `resolve-path` from `tools.build`.
+
 * v0.7.0 5d2cb60 -- 2022-02-24
   * Update `tools.build` to v0.8.0 for various enhancements and bug fixes.
 
