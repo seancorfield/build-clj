@@ -1,7 +1,8 @@
 # Change Log
 
-* v0.7.next in progress
+* v0.8.0 -- 2022-03-06
   * Fix [#18](https://github.com/seancorfield/build-clj/issues/18) by using `resolve-path` from `tools.build`.
+  * This project is now tracking `tools.build` version numbers (v0.8.0) _[I'll figure out a version schema for any releases I make between `tools.build` releases if that actually happens!]_
 
 * v0.7.0 5d2cb60 -- 2022-02-24
   * Update `tools.build` to v0.8.0 for various enhancements and bug fixes.
