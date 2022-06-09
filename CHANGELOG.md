@@ -1,6 +1,6 @@
 # Change Log
 
-* v0.8.2 -- 2022-06-09
+* v0.8.2 0ffdb4c -- 2022-06-09
   * Update `tools.build` to v0.8.2 for `compile-clj` enhancement and dependency updates.
 
 * v0.8.0 9bd8b8a -- 2022-03-06
