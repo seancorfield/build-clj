@@ -1,5 +1,8 @@
 # Change Log
 
+* v0.8.next in progress
+  * Fix [#23](https://github.com/seancorfield/build-clj/issues/23) by propagating `:exclusions` in `lifted-basis` (for `:transitive true`).
+
 * v0.8.2 0ffdb4c -- 2022-06-09
   * Update `tools.build` to v0.8.2 for `compile-clj` enhancement and dependency updates.
 
