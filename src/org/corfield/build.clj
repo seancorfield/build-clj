@@ -123,10 +123,9 @@
         source-dep?   #(not (:mvn/version (get default-libs %)))
         lifted-deps
         (reduce-kv (fn [deps lib {:keys [dependents] :as coords}]
-                     (let [version (:mvn/version coords)]
-                       (if (and version (some source-dep? dependents))
-                         (assoc deps lib {:mvn/version version})
-                         deps)))
+                     (if (and (contains? coords :mvn/version) (some source-dep? dependents))
+                       (assoc deps lib (select-keys coords [:mvn/version :exclusions]))
+                       deps))
                    {}
                    default-libs)]
     (-> (b/create-basis {:extra {:deps lifted-deps}})
