@@ -1,6 +1,6 @@
 # Change Log
 
-* v0.8.3 -- 2022-06-28
+* v0.8.3 7ac1f8d -- 2022-06-28
   * Fix [#23](https://github.com/seancorfield/build-clj/issues/23) by propagating `:exclusions` in `lifted-basis` (for `:transitive true`).
   * Update `tools.build` to v0.8.3 for `data_readers` fixes.
 
