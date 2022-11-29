@@ -1,6 +1,6 @@
 # Change Log
 
-* v0.8.5 -- 2022-11-29
+* v0.8.5 de693d0 -- 2022-11-29
   * Modify calls to `compile-clj` and `java-command` to default `:java-cmd` based on the `JAVA_CMD` and/or `JAVA_HOME` environment variables, if set. This won't be necessary when [TBUILD-34](https://clojure.atlassian.net/browse/TBUILD-34) is addressed.
   * Update `tools.build` to v0.8.5.
 
