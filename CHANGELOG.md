@@ -1,5 +1,9 @@
 # Change Log
 
+* v0.8.5 -- 2022-11-29
+  * Modify calls to `compile-clj` and `java-command` to default `:java-cmd` based on the `JAVA_CMD` and/or `JAVA_HOME` environment variables, if set. This won't be necessary when [TBUILD-34](https://clojure.atlassian.net/browse/TBUILD-34) is addressed.
+  * Update `tools.build` to v0.8.5.
+
 * v0.8.3 7ac1f8d -- 2022-06-28
   * Fix [#23](https://github.com/seancorfield/build-clj/issues/23) by propagating `:exclusions` in `lifted-basis` (for `:transitive true`).
   * Update `tools.build` to v0.8.3 for `data_readers` fixes.

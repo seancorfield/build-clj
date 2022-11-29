@@ -14,7 +14,7 @@ your `:build` alias can just be:
 
 ```clojure
   :build {:deps {io.github.seancorfield/build-clj
-                 {:git/tag "v0.8.3" :git/sha "7ac1f8d"}}
+                 {:git/tag "v0.8.5" :git/sha "7ac1f8d"}}
           :ns-default build}
 ```
 
@@ -37,7 +37,7 @@ not building JAR files at all) -- then you can specify a "slim" entry point to
 
 ```clojure
   :build {:deps {io.github.seancorfield/build-clj
-                 {:git/tag "v0.8.3" :git/sha "7ac1f8d"
+                 {:git/tag "v0.8.5" :git/sha "7ac1f8d"
                   ;; omits deps-deploy dependency:
                   :deps/root "slim"}}
           :ns-default build}
@@ -245,6 +245,8 @@ The following defaults are provided:
 * `:jar-file`  -- `(format \"%s/%s-%s.jar\" target lib version)`,
 * `:uber-file` -- `(format \"%s/%s-%s.jar\" target lib version)` if `:version` is provided, else `(format \"%s/%s-standalone.jar\" target lib)`.
 
+* `:java-cmd` -- as of v0.8.5, this defaults to the value of the `JAVA_CMD` environment variable (if set) or the value of `${JAVA_HOME}/bin/java` (if `JAVA_HOME` is set), so that `java-command` (in `run-task` and therefore `run-tests`) and `compile-clj` (in `uber`) should pick up the same `java` version as the Clojure CLI overall.
+
 As of v0.5.0, the four functions that compute those defaults are exposed for use in your own `build.clj` files:
 * `(default-target)`    -- return the default for `:target`,
 * `(default-basis)`     -- return the default for `:basis`,
@@ -314,6 +316,6 @@ You can see how `build-clj` is used to reduce boilerplate in the
 
 # License
 
-Copyright © 2021 Sean Corfield
+Copyright © 2021-2022 Sean Corfield
 
 Distributed under the Apache Software License version 2.0.
