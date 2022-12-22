@@ -67,7 +67,7 @@
   (:require [clojure.java.io :as io]
             [clojure.string :as str]
             [clojure.tools.build.api :as b]
-            [clojure.tools.deps.alpha :as t]
+            [clojure.tools.deps :as t]
             [org.corfield.log4j2-conflict-handler
              :refer [log4j2-conflict-handler]]))
 
@@ -206,14 +206,6 @@
     (b/jar opts))
   opts)
 
-(defn- find-java []
-  (let [java-cmd (or (System/getenv "JAVA_CMD")
-                     (when-let [home (System/getenv "JAVA_HOME")]
-                       (str home "/bin/java")))]
-    (if (and java-cmd (.exists (io/file java-cmd)))
-      java-cmd
-      "java")))
-
 (defn uber
   "Build the application uber JAR file.
 
@@ -239,7 +231,7 @@
                          src-dirs src-pom tag target version]}])}
   [{:keys [lib uber-file] :as opts}]
   (assert (or lib uber-file) ":lib or :uber-file is required for uber")
-  (let [{:keys [class-dir java-cmd lib ns-compile sort src-dirs src+dirs uber-file version]
+  (let [{:keys [class-dir lib ns-compile sort src-dirs src+dirs uber-file version]
          :as   opts}
         (jar-opts opts)]
     (if (and lib version)
@@ -253,7 +245,7 @@
     (if (or ns-compile sort)
       (do
         (println "Compiling" (str (str/join ", " (or ns-compile src-dirs)) "..."))
-        (b/compile-clj (assoc opts :java-cmd (or java-cmd (find-java)))))
+        (b/compile-clj opts))
       (println "Skipping compilation because :main, :ns-compile, and :sort were omitted..."))
     (println "Building uberjar" (str uber-file "..."))
     (b/uber opts))
@@ -313,14 +305,13 @@
 
   If :main-args is not provided and no :main-opts are found
   in the aliases, default to the Cognitect Labs' test-runner."
-  [{:keys [java-cmd java-opts jvm-opts main main-args main-opts] :as opts} aliases]
+  [{:keys [java-opts jvm-opts main main-args main-opts] :as opts} aliases]
   (let [task     (str/join ", " (map name aliases))
         _        (println "\nRunning task for:" task)
         basis    (b/create-basis {:aliases aliases})
         combined (t/combine-aliases basis aliases)
         cmds     (b/java-command
                   {:basis     basis
-                   :java-cmd  (or java-cmd (find-java))
                    :java-opts (into (or java-opts (:jvm-opts combined))
                                     jvm-opts)
                    :main      (or 'clojure.main main)

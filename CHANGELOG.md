@@ -1,7 +1,11 @@
 # Change Log
 
+* v0.9.0 -- 2022-12-22
+  * Update `tools.build` to v0.9.0 (and remove the workaround added to `build-clj` in v0.8.5 since [TBUILD-34](https://clojure.atlassian.net/browse/TBUILD-34) has been fixed).
+  * Update to non-alpha `tools.deps`. _[Note: `build-clj` uses `deps-deploy` which still depends on `tools.deps.alpha`.]_
+
 * v0.8.5 de693d0 -- 2022-11-29
-  * Modify calls to `compile-clj` and `java-command` to default `:java-cmd` based on the `JAVA_CMD` and/or `JAVA_HOME` environment variables, if set. This won't be necessary when [TBUILD-34](https://clojure.atlassian.net/browse/TBUILD-34) is addressed.
+  * Modify calls to `compile-clj` and `java-command` to default `:java-cmd` based on the `JAVA_CMD` and/or `JAVA_HOME` environment variables, if set. This won't be necessary when [TBUILD-34](https://clojure.atlassian.net/browse/TBUILD-34) is addressed. _[This workaround has been removed in v0.9.0.]_
   * Update `tools.build` to v0.8.5.
 
 * v0.8.3 7ac1f8d -- 2022-06-28

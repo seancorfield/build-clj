@@ -6,6 +6,8 @@ Having implemented `build.clj` (using `tools.build`) in several of my open sourc
 I found there was a lot of repetition across them, so I factored out
 the common functionality into this library.
 
+**Caution: this wrapper has outgrown its original goal (of being a simple wrapper to eliminate boilerplate) and has far more knobs and dials than I intended, so I would strongly advise you learn to use raw `tools.build` instead for anything beyond the simplest build script needs!**
+
 ## Use with `build.clj`
 
 Since it depends on both `tools.build` and
@@ -14,7 +16,7 @@ your `:build` alias can just be:
 
 ```clojure
   :build {:deps {io.github.seancorfield/build-clj
-                 {:git/tag "v0.8.5" :git/sha "de693d0"}}
+                 {:git/tag "v0.9.0" :git/sha "..."}}
           :ns-default build}
 ```
 
@@ -37,7 +39,7 @@ not building JAR files at all) -- then you can specify a "slim" entry point to
 
 ```clojure
   :build {:deps {io.github.seancorfield/build-clj
-                 {:git/tag "v0.8.5" :git/sha "de693d0"
+                 {:git/tag "v0.9.0" :git/sha "..."
                   ;; omits deps-deploy dependency:
                   :deps/root "slim"}}
           :ns-default build}
@@ -244,8 +246,6 @@ The following defaults are provided:
 * `:class-dir` -- `(str target "/classes")`,
 * `:jar-file`  -- `(format \"%s/%s-%s.jar\" target lib version)`,
 * `:uber-file` -- `(format \"%s/%s-%s.jar\" target lib version)` if `:version` is provided, else `(format \"%s/%s-standalone.jar\" target lib)`.
-
-* `:java-cmd` -- as of v0.8.5, this defaults to the value of the `JAVA_CMD` environment variable (if set) or the value of `${JAVA_HOME}/bin/java` (if `JAVA_HOME` is set), so that `java-command` (in `run-task` and therefore `run-tests`) and `compile-clj` (in `uber`) should pick up the same `java` version as the Clojure CLI overall.
 
 As of v0.5.0, the four functions that compute those defaults are exposed for use in your own `build.clj` files:
 * `(default-target)`    -- return the default for `:target`,
