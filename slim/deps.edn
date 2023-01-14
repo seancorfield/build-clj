@@ -1,5 +1,5 @@
 {:deps
  {io.github.seancorfield/build-clj-slim {:local/root "../"
                                          :exclusions [slipset/deps-deploy]}
-  io.github.clojure/tools.build {:git/tag "v0.9.0" :git/sha "8c93e0c"}
+  io.github.clojure/tools.build {:git/tag "v0.9.1" :git/sha "27ff8a4"}
   io.github.seancorfield/build-uber-log4j2-handler {:git/tag "v0.1.5" :git/sha "55fb6f6"}}}
