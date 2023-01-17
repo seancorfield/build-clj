@@ -1,5 +1,8 @@
 # Change Log
 
+* v0.9.2 -- 2023-01-17
+  * Update `tools.build` to v0.9.2 (for TBUILD-30 fix).
+
 * v0.9.1 831c70f -- 2023-01-14
   * Update `tools.build` to v0.9.1.
 
