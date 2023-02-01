@@ -305,15 +305,6 @@ of the `src` and `resources` folders from those local source subprojects.
 
 > Note: git dependencies look like local source subprojects so they will also be included if you specify `:transitive true` -- but your `pom.xml` will not contain those dependencies anyway so users of your library JAR would have a time if git folders are not copied into the JAR!
 
-## Projects Using `build-clj`
-
-You can see how `build-clj` is used to reduce boilerplate in the
-`build.clj` file of the following projects:
-
-* [`expectations`](https://github.com/clojure-expectations/clojure-test/blob/develop/build.clj)
-* [`honeysql`](https://github.com/seancorfield/honeysql/blob/develop/build.clj)
-* [`next.jdbc`](https://github.com/seancorfield/next-jdbc/blob/develop/build.clj)
-
 # License
 
 Copyright © 2021-2022 Sean Corfield
