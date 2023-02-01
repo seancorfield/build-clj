@@ -6,7 +6,7 @@ Having implemented `build.clj` (using `tools.build`) in several of my open sourc
 I found there was a lot of repetition across them, so I factored out
 the common functionality into this library.
 
-**Caution: this wrapper has outgrown its original goal (of being a simple wrapper to eliminate boilerplate) and has far more knobs and dials than I intended, so I would strongly advise you learn to use raw `tools.build` instead for anything beyond the simplest build script needs!**
+**Caution: this wrapper has outgrown its original goal (of being a simple wrapper to eliminate boilerplate) and has far more knobs and dials than I intended, so I am deprecating it -- you should learn to use raw `tools.build` instead!**
 
 ## Use with `build.clj`
 
